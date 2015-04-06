@@ -17,18 +17,41 @@ class Rover
     def to_s
         "x: #{@x}, y: #{@y}, d: #{@@clockwise[@d]}"
     end
-    def do_command(str)
-        str.each_char do |c|
+end
+class MissionControl
+    def initialize
+        @rovers = {}
+    end
+    def launch_rover(name, x, y, d)
+        @rovers[name] = Rover.new(x, y, d)
+    end
+    def command_rover(name, command)
+        rover = @rovers[name]
+        command.each_char do |c|
             case c.downcase
-            when 'l' then turn(false)
-            when 'r' then turn(true)
-            when 'm' then move
+            when 'l' then rover.turn(false)
+            when 'r' then rover.turn(true)
+            when 'm' then rover.move
             else
                 puts "'#{c}' is an invalid command"
             end
         end
     end
+    def get_rover(name, rover)
+        @rovers[name] = rover
+    end
+    def list_controlled_rovers
+        @rovers.each{ |k, v| puts "Rover #{k} is at (#{v})" }
+    end
+    def rover_status(name)
+        puts "#{name} is at (#{@rovers[name]})"
+    end
 end
-discovery = Rover.new(0, 0, 'e')
-discovery.do_command('mmlmmlmrmmm')
-puts discovery
+cape_canaveral = MissionControl.new
+cape_canaveral.launch_rover("discovery", 0, 0, 'n')
+cape_canaveral.launch_rover("endeavour", 1, 0, 'e')
+
+cape_canaveral.command_rover("discovery", "mmrmlmmm")
+cape_canaveral.list_controlled_rovers
+cape_canaveral.command_rover("endeavour", "mmmlmm")
+cape_canaveral.list_controlled_rovers
